@@ -1,10 +1,10 @@
-# JupyterHub Extension for Visual Studio Code
+# Tensorboard Extension for Visual Studio Code
 
-A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) that integrates with the Jupyter Extension allowing user to connect and execute code against kernels running on [JupyterHub](https://jupyter.org/hub).
+A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) that provides the ability to launch and view Tensorboards in VS Code.
 
 ### Quick Start
 -   **Step 1.** Install [VS Code](https://code.visualstudio.com/)
--   **Step 2.** Install the [JupyterHub Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
+-   **Step 2.** Install the [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
 -   **Step 3.** Open or create a notebook file by opening the Command Palette (`Ctrl+Shift+P`) and select `Jupyter: Create New Jupyter Notebook`.
 -   **Step 4.** Open the kernel picker by clicking on the kernel picker in the top right of the notebook or by invoking the `Notebook: Select Notebook Kernel` command
 -   Select the option `Existing JupyterHub Server...`
