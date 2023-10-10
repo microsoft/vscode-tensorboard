@@ -31,20 +31,20 @@ export class TensorBoardSessionProvider {
         );
     }
 
-    private updateTensorBoardSessionContext() {
-        let hasActiveTensorBoardSession = false;
-        this.knownSessions.forEach((viewer) => {
-            if (viewer.active) {
-                hasActiveTensorBoardSession = true;
-            }
-        });
-        void commands.executeCommand('setContext', 'python.hasActiveTensorBoardSession', hasActiveTensorBoardSession);
-    }
+    // private updateTensorBoardSessionContext() {
+    //     let hasActiveTensorBoardSession = false;
+    //     this.knownSessions.forEach((viewer) => {
+    //         if (viewer.active) {
+    //             hasActiveTensorBoardSession = true;
+    //         }
+    //     });
+    //     void commands.executeCommand('setContext', 'python.hasActiveTensorBoardSession', hasActiveTensorBoardSession);
+    // }
 
-    private async didDisposeSession(session: TensorBoardSession) {
-        this.knownSessions = this.knownSessions.filter((s) => s !== session);
-        this.updateTensorBoardSessionContext();
-    }
+    // private async didDisposeSession(session: TensorBoardSession) {
+    //     this.knownSessions = this.knownSessions.filter((s) => s !== session);
+    //     this.updateTensorBoardSessionContext();
+    // }
 
     private async createNewSession(): Promise<TensorBoardSession | undefined> {
         traceDebug('Starting new TensorBoard session...');

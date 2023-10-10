@@ -33,6 +33,7 @@ import { PythonExtension } from '@vscode/python-extension';
 import { disposableStore } from './common/lifecycle';
 import { sendJumptToSource, sendJumptToSourceNotFound, sendTensorboardStartupResult } from './common/telemetry';
 import { TensorboardLauncher } from './tensorboardLauncher';
+import { dependencies } from './dependencyChecker';
 
 enum Messages {
     JumpToSource = 'jump_to_source'
@@ -99,7 +100,7 @@ export class TensorBoardSession {
     }
 
     public async initialize(): Promise<void> {
-        const tensorBoardWasInstalled = await this.ensurePrerequisitesAreInstalled();
+        const tensorBoardWasInstalled = await dependencies.ensurePrerequisitesAreInstalled();
         if (!tensorBoardWasInstalled) {
             return;
         }
