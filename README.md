@@ -1,33 +1,36 @@
-# Project
+# JupyterHub Extension for Visual Studio Code
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) that integrates with the Jupyter Extension allowing user to connect and execute code against kernels running on [JupyterHub](https://jupyter.org/hub).
 
-As the maintainer of this project, please make a few updates:
+### Quick Start
+-   **Step 1.** Install [VS Code](https://code.visualstudio.com/)
+-   **Step 2.** Install the [JupyterHub Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
+-   **Step 3.** Open or create a notebook file by opening the Command Palette (`Ctrl+Shift+P`) and select `Jupyter: Create New Jupyter Notebook`.
+-   **Step 4.** Open the kernel picker by clicking on the kernel picker in the top right of the notebook or by invoking the `Notebook: Select Notebook Kernel` command
+-   Select the option `Existing JupyterHub Server...`
+-   Follow the prompts to enter the Url of the JupyterHub Server, username and password (or an [API token](https://github.com/microsoft/vscode-vscode-tensorboard/wiki/Logging-in-with-Username-and-API-token)).
+-   Next select a Kernel and start coding!
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+![jupyterHubPreview](https://github.com/microsoft/vscode-vscode-tensorboard/assets/1948812/0fadd80c-3455-4408-8be9-8c6441809654)
 
-## Contributing
+## Questions, issues, feature requests, and contributions
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+-   If you have a question about how to accomplish something with the extension, please [ask on Discussions](https://github.com/microsoft/vscode-jupyter/discussions). -   Any and all feedback is appreciated and welcome! If you come across a problem or bug with the extension, please [file an issue](https://github.com/microsoft/vscode-vscode-tensorboard/issues/new).
+    -   If someone has already [filed an issue](https://github.com/Microsoft/vscode-vscode-tensorboard/issues) that encompasses your feedback, please leave a 👍/👎 reaction on the issue.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+-   Contributions are always welcome, so please see our [contributing guide](https://github.com/Microsoft/vscode-tensorboard/blob/main/CONTRIBUTING.md) for more details.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Data and telemetry
+
+The Microsoft Jupyter Extension for Visual Studio Code collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://privacy.microsoft.com/privacystatement) to learn more. This extension respects the `telemetry.telemetryLevel` setting which you can learn more about at https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting.
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+"TensorFlow, the TensorFlow logo and any related
+marks are trademarks of Google Inc.”

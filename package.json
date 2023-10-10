@@ -1,0 +1,112 @@
+{
+    "name": "vscode-tensorboard",
+    "displayName": "Tensorboard",
+    "version": "2023.9.100",
+    "description": "Launch and view Tensorboards within VS Code",
+    "publisher": "ms-toolsai",
+    "preview": true,
+    "author": {
+        "name": "Microsoft Corporation"
+    },
+    "extensionDependencies": [
+        "ms-python.python"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/Microsoft/vscode-tensorboard",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/vscode-tensorboard"
+    },
+    "bugs": {
+        "url": "https://github.com/Microsoft/vscode-tensorboard/issues"
+    },
+    "qna": "https://github.com/microsoft/vscode-jupyter/discussions",
+    "icon": "icon.png",
+    "galleryBanner": {
+        "color": "#ffffff",
+        "theme": "light"
+    },
+    "engines": {
+        "vscode": "^1.83.0"
+    },
+    "l10n": "./l10n",
+    "keywords": [
+        "jupyter",
+        "multi-root ready",
+        "python"
+    ],
+    "categories": [
+        "Data Science",
+        "Machine Learning",
+        "Notebooks"
+    ],
+    "activationEvents": [
+        "onLanguage:python"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Tensobarod",
+            "properties": {
+                "tensorboard.log": {
+                    "type": "string",
+                    "default": "error",
+                    "enum": [
+                        "off",
+                        "error",
+                        "debug"
+                    ],
+                    "description": "%tensorboard.configuration.tensorboard.log.description%"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "package": "npm run compile-release && vsce package -o ms-toolsai-vscode-tensorboard-insiders.vsix",
+        "postinstall": "npx vscode-dts 1.83.0",
+        "lint": "eslint -c .eslintrc.js --ext .ts --ext .tsx src",
+        "prettier-fix": "prettier 'src/**/*.ts*' --write && prettier 'build/**/*.js' --write",
+        "updateBuildNumber": "node ./build/updateBuildNumber.js",
+        "vscode:prepublish": "npm run package",
+        "compile": "webpack",
+        "compile-relase": "webpack --mode production --devtool hidden-source-map",
+        "watch": "webpack --watch",
+        "compile-tests": "tsc -p . --outDir out",
+        "watch-tests": "tsc -p . -w --outDir out",
+        "pretest": "npm run compile-tests && npm run compile && npm run lint",
+        "test": "node ./out/test/runTest.js"
+        },
+    "dependencies": {
+        "@vscode/extension-telemetry": "^0.7.7",
+        "@vscode/python-extension": "^1.0.5"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.6",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "^16.18.6",
+        "@typescript-eslint/eslint-plugin": "^6.2.0",
+        "@typescript-eslint/eslint-plugin-tslint": "^6.2.0",
+        "@typescript-eslint/parser": "^6.2.0",
+        "@vscode/dts": "^0.4.0",
+        "@vscode/test-electron": "^2.3.4",
+        "chai": "^4.3.8",
+        "eslint": "^8.45.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-prettier": "^8.9.0",
+        "eslint-plugin-header": "^3.1.1",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-jsdoc": "^46.4.5",
+        "eslint-plugin-no-null": "^1.0.2",
+        "eslint-plugin-no-only-tests": "^3.1.0",
+        "eslint-plugin-prefer-arrow": "^1.2.3",
+        "eslint-plugin-prettier": "^5.0.0",
+        "glob": "^10.3.10",
+        "mocha": "^10.2.0",
+        "prettier": "^3.0.0",
+        "typescript": "^5.2.2",
+        "ts-loader": "^9.4.4",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    }
+}
