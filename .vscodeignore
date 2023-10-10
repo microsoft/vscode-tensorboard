@@ -27,6 +27,7 @@ cucumber-report.json
 gulpfile.js
 *.code-workspace
 news/**
+out/**
 package.webviews/webview-side.dependencies.json
 package-lock.json
 packageExtension.cmd
