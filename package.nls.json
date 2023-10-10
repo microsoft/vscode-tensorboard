@@ -1,0 +1,3 @@
+{
+    "tensorboard.configuration.tensorboard.log.description": "The logging level the extension logs at."
+}

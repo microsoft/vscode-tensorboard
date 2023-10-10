@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2020",
+
+        // Types
+        "lib": ["ES2020"],
+        "paths": {
+            "*": ["types/*"]
+        },
+        "typeRoots": ["./node_modules/@types"],
+
+        // Features/output
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "removeComments": true,
+        "resolveJsonModule": true,
+
+        // Strictness
+        "strict": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitOverride": true,
+        "noFallthroughCasesInSwitch": true,
+        "useUnknownInCatchVariables": false,
+        "strictPropertyInitialization": false,
+
+        "baseUrl": ".",
+        "rootDir": "src",
+        "outDir": "out"
+    }
+    // "include": ["./src/**/*", "./vscode.*"],
+    // "exclude": ["src/server/node_modules", "src/node_modules"]
+}

@@ -1,0 +1,86 @@
+on:
+  pull_request:
+    branches:
+      - main
+      - 'release'
+      - 'release/*'
+      - 'release-*'
+  check_run:
+    types: [rerequested, requested_action]
+  push:
+    branches:
+      - main
+      - 'release'
+      - 'release/*'
+      - 'release-*'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 18.17.1
+  NPM_VERSION: 9.6.7
+  PYTHON_VERSION: '3.10'
+
+jobs:
+  cancel_previous_runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Use Node ${{env.NODE_VERSION}}
+      uses: actions/setup-node@v3
+      with:
+       node-version: ${{env.NODE_VERSION}}
+    - name: Use Npm ${{env.NPM_VERSION}}
+      run: npm i -g npm@${{env.NPM_VERSION}}
+    - run: npm i -g @vscode/vsce
+    - run: npm ci --prefer-offline --no-audit
+    - run: npm run package
+    - uses: actions/upload-artifact@v3
+      with:
+        name: 'ms-toolsai-tensorboard-insiders.vsix'
+        path: 'ms-toolsai-tensorboard-insiders.vsix'
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Use Node ${{env.NODE_VERSION}}
+      uses: actions/setup-node@v3
+      with:
+       node-version: ${{env.NODE_VERSION}}
+    - name: Use Npm ${{env.NPM_VERSION}}
+      run: npm i -g npm@${{env.NPM_VERSION}}
+    - run: npm ci --prefer-offline --no-audit
+    - run: npm run lint
+
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Use Node ${{env.NODE_VERSION}}
+      uses: actions/setup-node@v3
+      with:
+       node-version: ${{env.NODE_VERSION}}
+    - name: Use Python ${{env.PYTHON_VERSION}}
+      uses: actions/setup-python@v4
+      with:
+       python-version: ${{env.PYTHON_VERSION}}
+    - name: Use Npm ${{env.NPM_VERSION}}
+      run: npm i -g npm@${{env.NPM_VERSION}}
+    - run: npm i -g @vscode/vsce
+    - run: npm ci --prefer-offline --no-audit
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
