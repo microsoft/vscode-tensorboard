@@ -68,7 +68,6 @@
         "lint": "eslint -c .eslintrc.js --ext .ts --ext .tsx src",
         "prettier-fix": "prettier 'src/**/*.ts*' --write && prettier 'build/**/*.js' --write",
         "updateBuildNumber": "node ./build/updateBuildNumber.js",
-        "vscode:prepublish": "npm run package",
         "compile": "webpack",
         "compile-release": "webpack --mode production --devtool hidden-source-map",
         "watch": "webpack --watch",
