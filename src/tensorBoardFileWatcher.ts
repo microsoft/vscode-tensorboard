@@ -3,24 +3,22 @@
 
 import { FileSystemWatcher, RelativePattern, WorkspaceFolder, WorkspaceFoldersChangeEvent, workspace } from 'vscode';
 import { TensorBoardPrompt } from './tensorBoardPrompt';
-import { noop } from './common/utils';
-import { disposableStore } from './common/lifecycle';
+import { BaseDisposable } from './common/lifecycle';
 import { TensorBoardEntrypointTrigger } from './constants';
 
-export class TensorBoardFileWatcher {
+export class TensorBoardFileWatcher extends BaseDisposable {
     public readonly supportedWorkspaceTypes = { untrustedWorkspace: false, virtualWorkspace: false };
 
     private fileSystemWatchers = new Map<WorkspaceFolder, FileSystemWatcher[]>();
 
     private globPatterns = ['*tfevents*', '*/*tfevents*', '*/*/*tfevents*'];
 
-    constructor(private tensorBoardPrompt: TensorBoardPrompt) {}
-
-    public async activate(): Promise<void> {
-        this.activateInternal().then(noop, noop);
+    constructor() {
+        super();
+        this.activateInternal();
     }
 
-    private async activateInternal() {
+    private activateInternal() {
         const folders = workspace.workspaceFolders;
         if (!folders) {
             return;
@@ -32,7 +30,7 @@ export class TensorBoardFileWatcher {
         }
 
         // If workspace folders change, ensure we update our FileSystemWatchers
-        disposableStore.add(workspace.onDidChangeWorkspaceFolders((e) => this.updateFileSystemWatchers(e)));
+        this._register(workspace.onDidChangeWorkspaceFolders((e) => this.updateFileSystemWatchers(e)));
     }
 
     private async updateFileSystemWatchers(event: WorkspaceFoldersChangeEvent) {
@@ -55,17 +53,17 @@ export class TensorBoardFileWatcher {
             const fileSystemWatcher = workspace.createFileSystemWatcher(relativePattern);
 
             // When a file is created or changed that matches `this.globPattern`, try to show our prompt
-            disposableStore.add(
+            this._register(
                 fileSystemWatcher.onDidCreate(() =>
-                    this.tensorBoardPrompt.showNativeTensorBoardPrompt(TensorBoardEntrypointTrigger.tfeventfiles)
+                    TensorBoardPrompt.showNativeTensorBoardPrompt(TensorBoardEntrypointTrigger.tfeventfiles)
                 )
             );
-            disposableStore.add(
+            this._register(
                 fileSystemWatcher.onDidChange(() =>
-                    this.tensorBoardPrompt.showNativeTensorBoardPrompt(TensorBoardEntrypointTrigger.tfeventfiles)
+                    TensorBoardPrompt.showNativeTensorBoardPrompt(TensorBoardEntrypointTrigger.tfeventfiles)
                 )
             );
-            disposableStore.add(fileSystemWatcher);
+            this._register(fileSystemWatcher);
             fileWatchers.push(fileSystemWatcher);
         }
         this.fileSystemWatchers.set(folder, fileWatchers);

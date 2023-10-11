@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { ExtensionContext } from 'vscode';
+
 export enum TensorBoardPromptSelection {
     Yes = 'yes',
     No = 'no',
@@ -22,8 +24,8 @@ export enum TensorBoardSessionStartResult {
 }
 
 export namespace Commands {
-    export const LaunchTensorBoard = 'python.launchTensorBoard';
-    export const RefreshTensorBoard = 'python.refreshTensorBoard';
+    export const LaunchTensorBoard = 'tensorboard.launch';
+    export const RefreshTensorBoard = 'tensorboard.refresh';
 }
 
 export enum EventName {
@@ -48,6 +50,7 @@ export const PYTHON_WARNINGS = 'PYTHONWARNINGS';
 export const NotebookCellScheme = 'vscode-notebook-cell';
 export const InteractiveInputScheme = 'vscode-interactive-input';
 export const InteractiveScheme = 'vscode-interactive';
+export const PythonExtensionId = 'ms-python.python';
 
 export enum TensorBoardEntrypoint {
     prompt = 'prompt',
@@ -62,3 +65,9 @@ export const PYTHON = [
     { scheme: NotebookCellScheme, language: PYTHON_LANGUAGE },
     { scheme: InteractiveInputScheme, language: PYTHON_LANGUAGE }
 ];
+
+export const ExtensionInfo: {
+    context: ExtensionContext;
+    // Value will be set in extension.ts
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} = {} as any;

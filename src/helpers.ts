@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { workspace } from 'vscode';
 import { noop } from './common/utils';
 
 // While it is uncommon for users to `import tensorboard`, TensorBoard is frequently
@@ -35,6 +36,13 @@ export function containsNotebookExtension(lines: (string | undefined)[]): boolea
         if (s?.startsWith('%tensorboard') || s?.startsWith('%load_ext tensorboard')) {
             return true;
         }
+    }
+    return false;
+}
+
+export function hasFileBasedWorkspace() {
+    if (!workspace.workspaceFolders || workspace.workspaceFolders.some((w) => w.uri.scheme === 'file')) {
+        return true;
     }
     return false;
 }
