@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { ChildProcess } from 'child_process';
 import {
     CancellationToken,
+    Disposable,
     env,
     Event,
     EventEmitter,
@@ -23,27 +24,23 @@ import {
     window,
     workspace
 } from 'vscode';
-import { TensorBoardSessionStartResult } from './constants';
+import { ExtensionInfo, TensorBoardSessionStartResult } from './constants';
 import { StopWatch } from './common/stopwatch';
 import { traceDebug, traceError } from './common/logging';
 import { TensorBoard } from './common/localize';
 import { raceCancellation, sleep } from './common/async';
 import { getLogDirectory } from './configuration';
 import { PythonExtension } from '@vscode/python-extension';
-import { disposableStore } from './common/lifecycle';
+import { BaseDisposable } from './common/lifecycle';
 import { sendJumptToSource, sendJumptToSourceNotFound, sendTensorboardStartupResult } from './common/telemetry';
-import { TensorboardLauncher } from './tensorboardLauncher';
+import { launchTensorboard, waitForTensorboardToStart } from './launcher';
+import { PrivatePythonApiProvider } from './pythonApi';
 
 enum Messages {
     JumpToSource = 'jump_to_source'
 }
 
 const PREFERRED_VIEWGROUP = 'PythonTensorBoardWebviewPreferredViewGroup';
-
-export function tensorboardLauncher(extensionRoot: Uri, args: string[]): string[] {
-    const script = Uri.joinPath(extensionRoot, 'tensorboard_launcher.py');
-    return [script.fsPath, ...args];
-}
 
 /**
  * Manages the lifecycle of a TensorBoard session.
@@ -55,7 +52,7 @@ export function tensorboardLauncher(extensionRoot: Uri, args: string[]): string[
  * - frames the TensorBoard website in a VSCode webview
  * - shuts down the TensorBoard process when the webview is closed
  */
-export class TensorBoardSession {
+export class TensorBoardSession extends BaseDisposable {
     public get panel(): WebviewPanel | undefined {
         return this.webviewPanel;
     }
@@ -68,15 +65,18 @@ export class TensorBoardSession {
 
     private webviewPanel: WebviewPanel | undefined;
 
-    private url: string | undefined;
+    private url: string;
 
     private process: ChildProcess | undefined;
 
-    private onDidChangeViewStateEventEmitter = new EventEmitter<void>();
+    private onDidChangeViewStateEventEmitter = this._register(new EventEmitter<void>());
 
-    private onDidDisposeEventEmitter = new EventEmitter<TensorBoardSession>();
-
-    constructor(private readonly globalMemento: Memento) {}
+    private onDidDisposeEventEmitter = this._register(new EventEmitter<TensorBoardSession>());
+    private readonly globalMemento: Memento;
+    constructor() {
+        super();
+        this.globalMemento = ExtensionInfo.context.globalState;
+    }
 
     public get onDidDispose(): Event<TensorBoardSession> {
         return this.onDidDisposeEventEmitter.event;
@@ -95,11 +95,12 @@ export class TensorBoardSession {
             return;
         }
         this.webviewPanel.webview.html = '';
-        this.webviewPanel.webview.html = await this.getHtml();
+        this.webviewPanel.webview.html = await this.getHtml(this.url);
     }
 
-    public async initialize(): Promise<void> {
-        const tensorBoardWasInstalled = await this.ensurePrerequisitesAreInstalled();
+    public async start(): Promise<void> {
+        const api = await PrivatePythonApiProvider.instance.getApi();
+        const tensorBoardWasInstalled = await api.ensureDependenciesAreInstalled();
         if (!tensorBoardWasInstalled) {
             return;
         }
@@ -107,20 +108,21 @@ export class TensorBoardSession {
         if (!logDir) {
             return;
         }
-        const startedSuccessfully = await this.startTensorboardSession(logDir);
-        if (startedSuccessfully) {
-            await this.showPanel();
+        const url = await this.startTensorboardSession(logDir);
+        if (url) {
+            this.url = url;
+            await this.showPanel(url);
         }
     }
 
     // Spawn a process which uses TensorBoard's Python API to start a TensorBoard session.
     // Times out if it hasn't started up after 1 minute.
     // Hold on to the process so we can kill it when the webview is closed.
-    private async startTensorboardSession(logDir: string): Promise<boolean> {
+    private async startTensorboardSession(logDir: string): Promise<string | undefined> {
         const pythonApi = await PythonExtension.api();
-        const interpreter = pythonApi.environments.getActiveEnvironmentPath(Uri.file(logDir));
+        const interpreter = pythonApi.environments.getActiveEnvironmentPath();
         if (!interpreter) {
-            return false;
+            return;
         }
 
         // Timeout waiting for TensorBoard to start after 60 seconds.
@@ -136,13 +138,14 @@ export class TensorBoardSession {
         };
 
         const sessionStartStopwatch = new StopWatch();
-        const proc = await TensorboardLauncher.launch(interpreter, logDir);
+        const proc = await launchTensorboard(undefined, interpreter, logDir);
+        this._register(new Disposable(() => proc.kill()));
         const result = await window.withProgress(
             progressOptions,
             (_progress: Progress<unknown>, token: CancellationToken) => {
                 traceDebug(`Starting TensorBoard with log directory ${logDir}...`);
 
-                const spawnTensorBoard = TensorboardLauncher.waitForStart(proc, token);
+                const spawnTensorBoard = waitForTensorboardToStart(proc, token);
 
                 return Promise.race([
                     sleep(timeout).then(() => timeout),
@@ -151,35 +154,35 @@ export class TensorBoardSession {
             }
         );
 
-        switch (result) {
-            case 'canceled':
-                traceDebug('Canceled starting TensorBoard session.');
-                sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.cancel);
-                proc.kill();
-                return false;
-            case 'success':
-                this.process = proc;
-                sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.success);
-                return true;
-            case timeout:
-                proc.kill();
-                sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.error);
-                throw new Error(`Timed out after ${timeout / 1000} seconds waiting for TensorBoard to launch.`);
-            default:
-                // We should never get here
-                throw new Error(`Failed to start TensorBoard, received unknown promise result: ${result}`);
+        if (result === 'canceled') {
+            traceDebug('Canceled starting TensorBoard session.');
+            sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.cancel);
+            proc.kill();
+            return;
         }
+        if (result === 'success') {
+            this.process = proc;
+            sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.success);
+            return;
+        }
+        if (typeof result === 'number') {
+            proc.kill();
+            sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.error);
+            throw new Error(`Timed out after ${timeout / 1000} seconds waiting for TensorBoard to launch.`);
+        }
+        traceDebug(`Started TensorBoard session with result ${result}`);
+        return result;
     }
 
-    private async showPanel() {
+    private async showPanel(url: string) {
         traceDebug('Showing TensorBoard panel');
-        const panel = this.webviewPanel || (await this.createPanel());
+        const panel = this.webviewPanel || (await this.createPanel(url));
         panel.reveal();
         this._active = true;
         this.onDidChangeViewStateEventEmitter.fire();
     }
 
-    private async createPanel() {
+    private async createPanel(url: string) {
         const webviewPanel = window.createWebviewPanel(
             'tensorBoardSession',
             'TensorBoard',
@@ -189,9 +192,10 @@ export class TensorBoardSession {
                 retainContextWhenHidden: true
             }
         );
-        webviewPanel.webview.html = await this.getHtml();
+        this._register(webviewPanel);
+        webviewPanel.webview.html = await this.getHtml(url);
         this.webviewPanel = webviewPanel;
-        disposableStore.add(
+        this._register(
             webviewPanel.onDidDispose(() => {
                 this.webviewPanel = undefined;
                 // Kill the running TensorBoard session
@@ -201,7 +205,7 @@ export class TensorBoardSession {
                 this.onDidDisposeEventEmitter.fire(this);
             })
         );
-        disposableStore.add(
+        this._register(
             webviewPanel.onDidChangeViewState(async (args: WebviewPanelOnDidChangeViewStateEvent) => {
                 // The webview has been moved to a different viewgroup if it was active before and remains active now
                 if (this.active && args.webviewPanel.active) {
@@ -211,7 +215,7 @@ export class TensorBoardSession {
                 this.onDidChangeViewStateEventEmitter.fire();
             })
         );
-        disposableStore.add(
+        this._register(
             webviewPanel.webview.onDidReceiveMessage((message) => {
                 // Handle messages posted from the webview
                 switch (message.command) {
@@ -277,13 +281,13 @@ export class TensorBoardSession {
         }
     }
 
-    private async getHtml() {
+    private async getHtml(url: string) {
         // We cannot cache the result of calling asExternalUri, so regenerate
         // it each time. From docs: "Note that extensions should not cache the
         // result of asExternalUri as the resolved uri may become invalid due
         // to a system or user action — for example, in remote cases, a user may
         // close a port forwarding tunnel that was opened by asExternalUri."
-        const fullWebServerUri = await env.asExternalUri(Uri.parse(this.url!));
+        const fullWebServerUri = await env.asExternalUri(Uri.parse(url));
         return `<!DOCTYPE html>
         <html lang="en">
             <head>

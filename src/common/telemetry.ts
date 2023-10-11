@@ -81,7 +81,6 @@ export function publicLog2<E extends ClassifiedEvent<OmitMetadata<T>> = never, T
     telemetryReporter.sendTelemetryEvent(eventName, data);
 }
 
-const urlsAndVersion = new Map<string, string>();
 function getHostName(url: string) {
     try {
         return new URL(url).hostname;
@@ -108,13 +107,13 @@ type TensorboardEntrypontTriggeredDataClassification = {
         comment: 'Code lens displayed';
     };
 };
-function stripPIIFromVersion(version: string) {
-    const parts = version.split('.');
-    if (parts.length < 2) {
-        return 0;
-    }
-    return parseFloat(`${parseInt(parts[0], 10)}.${parseInt(parts[1], 10)}`);
-}
+// function stripPIIFromVersion(version: string) {
+//     const parts = version.split('.');
+//     if (parts.length < 2) {
+//         return 0;
+//     }
+//     return parseFloat(`${parseInt(parts[0], 10)}.${parseInt(parts[1], 10)}`);
+// }
 
 /**
  * Safe way to send data in telemetry (obfuscate PII).

@@ -10,34 +10,30 @@ import {
     TensorBoardEntrypointTrigger
 } from './constants';
 import { containsNotebookExtension } from './helpers';
-import { disposableStore } from './common/lifecycle';
 import { Localized } from './common/localize';
 import { sendTensorboardEntrypointTriggered } from './common/telemetry';
 
-export class TensorBoardNbextensionCodeLensProvider {
-    public readonly supportedWorkspaceTypes = { untrustedWorkspace: false, virtualWorkspace: false };
-    private telemtetrySent = false;
-    private sendTelemetryOnce() {
-        if (this.telemtetrySent) {
+export namespace TensorBoardNbextensionCodeLensProvider {
+    let telemtetrySent = false;
+    function sendTelemetryOnce() {
+        if (telemtetrySent) {
             return;
         }
-        this.telemtetrySent = true;
+        telemtetrySent = true;
         sendTensorboardEntrypointTriggered(TensorBoardEntrypointTrigger.nbextension, TensorBoardEntrypoint.codelens);
     }
 
-    public async activate() {
-        disposableStore.add(
-            languages.registerCodeLensProvider(
-                [
-                    { scheme: NotebookCellScheme, language: PYTHON_LANGUAGE },
-                    { scheme: 'vscode-notebook', language: PYTHON_LANGUAGE }
-                ],
-                this
-            )
+    export function registerCodeLensProvider() {
+        return languages.registerCodeLensProvider(
+            [
+                { scheme: NotebookCellScheme, language: PYTHON_LANGUAGE },
+                { scheme: 'vscode-notebook', language: PYTHON_LANGUAGE }
+            ],
+            { provideCodeLenses }
         );
     }
 
-    public provideCodeLenses(document: TextDocument, cancelToken: CancellationToken): CodeLens[] {
+    function provideCodeLenses(document: TextDocument, cancelToken: CancellationToken): CodeLens[] {
         const command: Command = {
             title: Localized.launchNativeTensorBoardSessionCodeLens,
             command: Commands.LaunchTensorBoard,
@@ -54,7 +50,7 @@ export class TensorBoardNbextensionCodeLensProvider {
             if (containsNotebookExtension([line.text])) {
                 const range = new Range(new Position(line.lineNumber, 0), new Position(line.lineNumber, 1));
                 codelenses.push(new CodeLens(range, command));
-                this.sendTelemetryOnce();
+                sendTelemetryOnce();
             }
         }
         return codelenses;

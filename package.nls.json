@@ -1,3 +1,5 @@
 {
-    "tensorboard.configuration.tensorboard.log.description": "The logging level the extension logs at."
+    "tensorboard.configuration.tensorboard.log.description": "The logging level the extension logs at.",
+    "launchTensorBoard.title": "Launch TensorBoard",
+    "refreshTensorBoard.title": "Refresh TensorBoard"
 }

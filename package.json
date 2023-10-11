@@ -1,7 +1,7 @@
 {
-    "name": "vscode-tensorboard",
+    "name": "tensorboard",
     "displayName": "Tensorboard",
-    "version": "2023.9.100",
+    "version": "2023.10.100",
     "description": "Launch and view Tensorboards within VS Code",
     "publisher": "ms-toolsai",
     "preview": true,
@@ -45,6 +45,38 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "category": "Python",
+                "command": "tensorboard.launch",
+                "title": "%launchTensorBoard.title%"
+            },
+            {
+                "category": "Python",
+                "command": "tensorboard.refresh",
+                "enablement": "tensorboard.hasActiveTensorBoardSession",
+                "icon": "$(refresh)",
+                "title": "%refreshTensorBoard.title%"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "category": "Python",
+                    "command": "tensorboard.launch",
+                    "title": "%launchTensorBoard.title%",
+                    "when": "!virtualWorkspace && isWorkspaceTrusted"
+                },
+                {
+                    "category": "Python",
+                    "command": "tensorboard.refresh",
+                    "enablement": "tensorboard.hasActiveTensorBoardSession",
+                    "icon": "$(refresh)",
+                    "title": "%refreshTensorBoard.title%",
+                    "when": "!virtualWorkspace && isWorkspaceTrusted"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
             "title": "Tensobarod",
@@ -68,15 +100,14 @@
         "lint": "eslint -c .eslintrc.js --ext .ts --ext .tsx src",
         "prettier-fix": "prettier 'src/**/*.ts*' --write && prettier 'build/**/*.js' --write",
         "updateBuildNumber": "node ./build/updateBuildNumber.js",
-        "vscode:prepublish": "npm run package",
         "compile": "webpack",
-        "compile-relase": "webpack --mode production --devtool hidden-source-map",
+        "compile-release": "webpack --mode production --devtool hidden-source-map",
         "watch": "webpack --watch",
         "compile-tests": "tsc -p . --outDir out",
         "watch-tests": "tsc -p . -w --outDir out",
         "pretest": "npm run compile-tests && npm run compile && npm run lint",
         "test": "node ./out/test/runTest.js"
-        },
+    },
     "dependencies": {
         "@vscode/extension-telemetry": "^0.7.7",
         "@vscode/python-extension": "^1.0.5"

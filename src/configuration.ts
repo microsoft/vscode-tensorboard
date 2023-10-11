@@ -88,7 +88,8 @@ function getQuickPickItems(logDir: string | undefined) {
 }
 
 function getLogDirectoryForResource(resource?: Uri) {
-    const settingValue = workspace.getConfiguration('tensorboard', resource).get<string>('logDirectory');
+    const config = workspace.getConfiguration('python', resource);
+    const settingValue = config.get<{ logDirectory?: string }>('tensorBoard')?.logDirectory;
     if (settingValue) {
         traceDebug(`Using log directory resolved by python.tensorBoard.logDirectory setting: ${settingValue}`);
         return settingValue;

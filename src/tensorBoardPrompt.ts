@@ -1,65 +1,86 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { Memento, commands, window } from 'vscode';
+import { commands, window } from 'vscode';
 import { Common, TensorBoard } from './common/localize';
-import { Commands, TensorBoardEntrypoint, TensorBoardEntrypointTrigger, TensorBoardPromptSelection } from './constants';
+import {
+    Commands,
+    ExtensionInfo,
+    TensorBoardEntrypoint,
+    TensorBoardEntrypointTrigger,
+    TensorBoardPromptSelection
+} from './constants';
 import { sendTensorboardEntrypointTriggered, sendTensorboardPromptSelection } from './common/telemetry';
+import { PrivatePythonApiProvider } from './pythonApi';
+import { traceDebug } from './common/logging';
+import { hasFileBasedWorkspace } from './helpers';
 enum TensorBoardPromptStateKeys {
     ShowNativeTensorBoardPrompt = 'showNativeTensorBoardPrompt'
 }
 
-export class TensorBoardPrompt {
-    private enabledInCurrentSession = true;
+export namespace TensorBoardPrompt {
+    let enabledInCurrentSession = true;
 
-    private waitingForUserSelection = false;
-    private telementrSent = false;
-    private sendTelemetryOnce(trigger: TensorBoardEntrypointTrigger) {
-        if (this.telementrSent) {
+    let waitingForUserSelection = false;
+    let telementrSent = false;
+    function sendTelemetryOnce(trigger: TensorBoardEntrypointTrigger) {
+        if (telementrSent) {
             return;
         }
-        this.telementrSent = true;
+        telementrSent = true;
         sendTensorboardEntrypointTriggered(trigger, TensorBoardEntrypoint.prompt);
     }
 
-    constructor(private readonly globalMmento: Memento) {}
-
-    public async showNativeTensorBoardPrompt(trigger: TensorBoardEntrypointTrigger): Promise<void> {
-        if (this.isPromptEnabled() && this.enabledInCurrentSession && !this.waitingForUserSelection) {
-            const yes = Common.bannerLabelYes;
-            const no = Common.bannerLabelNo;
-            const doNotAskAgain = Common.doNotShowAgain;
-            const options = [yes, no, doNotAskAgain];
-            this.waitingForUserSelection = true;
-            this.sendTelemetryOnce(trigger);
-            const selection = await window.showInformationMessage(TensorBoard.nativeTensorBoardPrompt, ...options);
-            this.waitingForUserSelection = false;
-            this.enabledInCurrentSession = false;
-            let telemetrySelection = TensorBoardPromptSelection.None;
-            switch (selection) {
-                case yes:
-                    telemetrySelection = TensorBoardPromptSelection.Yes;
-                    await commands.executeCommand(Commands.LaunchTensorBoard, TensorBoardEntrypoint.prompt, trigger);
-                    break;
-                case doNotAskAgain:
-                    telemetrySelection = TensorBoardPromptSelection.DoNotAskAgain;
-                    await this.disablePrompt();
-                    break;
-                case no:
-                    telemetrySelection = TensorBoardPromptSelection.No;
-                    break;
-                default:
-                    break;
-            }
-            sendTensorboardPromptSelection(telemetrySelection);
+    export async function showNativeTensorBoardPrompt(trigger: TensorBoardEntrypointTrigger): Promise<void> {
+        if (!enabledInCurrentSession || waitingForUserSelection) {
+            return;
         }
+        if (!(await isPromptEnabled())) {
+            return;
+        }
+        const yes = Common.Yes;
+        const no = Common.bannerLabelNo;
+        const doNotAskAgain = Common.doNotShowAgain;
+        const options = [yes, no, doNotAskAgain];
+        waitingForUserSelection = true;
+        sendTelemetryOnce(trigger);
+        const selection = await window.showInformationMessage(TensorBoard.nativeTensorBoardPrompt, ...options);
+        waitingForUserSelection = false;
+        enabledInCurrentSession = false;
+        let telemetrySelection = TensorBoardPromptSelection.None;
+        switch (selection) {
+            case yes:
+                telemetrySelection = TensorBoardPromptSelection.Yes;
+                await commands.executeCommand(Commands.LaunchTensorBoard, TensorBoardEntrypoint.prompt, trigger);
+                break;
+            case doNotAskAgain:
+                telemetrySelection = TensorBoardPromptSelection.DoNotAskAgain;
+                await disablePrompt();
+                break;
+            case no:
+                telemetrySelection = TensorBoardPromptSelection.No;
+                break;
+            default:
+                break;
+        }
+        sendTensorboardPromptSelection(telemetrySelection);
     }
 
-    private isPromptEnabled(): boolean {
-        return this.globalMmento.get<boolean>(TensorBoardPromptStateKeys.ShowNativeTensorBoardPrompt, true);
+    async function isPromptEnabled(): Promise<boolean> {
+        // Prompts are enabled, only if we have at least one worksapce thats a real file system with python
+        // Or no workspaces at all.
+        if (!hasFileBasedWorkspace()) {
+            traceDebug('TensorBoard prompt is disabled as there are no workspace folders that are file system based');
+            return false;
+        }
+        const pythonApi = await PrivatePythonApiProvider.instance.getApi();
+        return (
+            pythonApi.isPromptEnabled() &&
+            ExtensionInfo.context.globalState.get<boolean>(TensorBoardPromptStateKeys.ShowNativeTensorBoardPrompt, true)
+        );
     }
 
-    private async disablePrompt() {
-        await this.globalMmento.update(TensorBoardPromptStateKeys.ShowNativeTensorBoardPrompt, false);
+    async function disablePrompt() {
+        await ExtensionInfo.context.globalState.update(TensorBoardPromptStateKeys.ShowNativeTensorBoardPrompt, false);
     }
 }

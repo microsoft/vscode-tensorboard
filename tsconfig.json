@@ -32,7 +32,7 @@
         "baseUrl": ".",
         "rootDir": "src",
         "outDir": "out"
-    }
+    },
     // "include": ["./src/**/*", "./vscode.*"],
-    // "exclude": ["src/server/node_modules", "src/node_modules"]
+    "exclude": ["temp", "tmp"]
 }

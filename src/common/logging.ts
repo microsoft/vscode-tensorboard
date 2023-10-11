@@ -29,7 +29,12 @@ export function traceError(..._args: unknown[]): void {
     }
     logMessage('error', ..._args);
 }
-
+export function logProcessSpawn(cmd: string, args: string[], cwd: string) {
+    if (loggingLevel === 'off') {
+        return;
+    }
+    logMessage('debug', `Spawning process: ${cmd} ${args.join(' ')} in ${cwd}`);
+}
 export function traceDebug(_message: string, ..._args: unknown[]): void {
     if (loggingLevel !== 'debug') {
         return;
