@@ -34,35 +34,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Use Node ${{env.NODE_VERSION}}
-      uses: actions/setup-node@v3
-      with:
-       node-version: ${{env.NODE_VERSION}}
-    - name: Use Npm ${{env.NPM_VERSION}}
-      run: npm i -g npm@${{env.NPM_VERSION}}
-    - run: npm i -g @vscode/vsce
-    - run: npm ci --prefer-offline --no-audit
-    - run: npm run package
-    - uses: actions/upload-artifact@v3
-      with:
-        name: 'ms-toolsai-tensorboard-insiders.vsix'
-        path: 'ms-toolsai-tensorboard-insiders.vsix'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Use Npm ${{env.NPM_VERSION}}
+        run: npm i -g npm@${{env.NPM_VERSION}}
+      - run: npm i -g @vscode/vsce
+      - run: npm ci --prefer-offline --no-audit
+      - run: npm run package
+      - uses: actions/upload-artifact@v3
+        with:
+          name: 'ms-toolsai-tensorboard-insiders.vsix'
+          path: 'ms-toolsai-tensorboard-insiders.vsix'
 
   lint:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Use Node ${{env.NODE_VERSION}}
-      uses: actions/setup-node@v3
-      with:
-       node-version: ${{env.NODE_VERSION}}
-    - name: Use Npm ${{env.NPM_VERSION}}
-      run: npm i -g npm@${{env.NPM_VERSION}}
-    - run: npm ci --prefer-offline --no-audit
-    - run: npm run lint
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Use Npm ${{env.NPM_VERSION}}
+        run: npm i -g npm@${{env.NPM_VERSION}}
+      - run: npm ci --prefer-offline --no-audit
+      - run: npm run lint
+      - run: npm run format
 
   tests:
     strategy:
@@ -70,19 +71,19 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Use Node ${{env.NODE_VERSION}}
-      uses: actions/setup-node@v3
-      with:
-       node-version: ${{env.NODE_VERSION}}
-    - name: Use Python ${{env.PYTHON_VERSION}}
-      uses: actions/setup-python@v4
-      with:
-       python-version: ${{env.PYTHON_VERSION}}
-    - name: Use Npm ${{env.NPM_VERSION}}
-      run: npm i -g npm@${{env.NPM_VERSION}}
-    - run: npm i -g @vscode/vsce
-    - run: npm ci --prefer-offline --no-audit
-    - run: xvfb-run -a npm test
-      if: runner.os == 'Linux'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Use Python ${{env.PYTHON_VERSION}}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{env.PYTHON_VERSION}}
+      - name: Use Npm ${{env.NPM_VERSION}}
+        run: npm i -g npm@${{env.NPM_VERSION}}
+      - run: npm i -g @vscode/vsce
+      - run: npm ci --prefer-offline --no-audit
+      - run: xvfb-run -a npm test
+        if: runner.os == 'Linux'

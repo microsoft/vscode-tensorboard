@@ -4,20 +4,18 @@ A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marke
 
 ### Quick Start
 -   **Step 1.** Install [VS Code](https://code.visualstudio.com/)
--   **Step 2.** Install the [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
--   **Step 3.** Open or create a notebook file by opening the Command Palette (`Ctrl+Shift+P`) and select `Jupyter: Create New Jupyter Notebook`.
--   **Step 4.** Open the kernel picker by clicking on the kernel picker in the top right of the notebook or by invoking the `Notebook: Select Notebook Kernel` command
--   Select the option `Existing JupyterHub Server...`
--   Follow the prompts to enter the Url of the JupyterHub Server, username and password (or an [API token](https://github.com/microsoft/vscode-vscode-tensorboard/wiki/Logging-in-with-Username-and-API-token)).
--   Next select a Kernel and start coding!
+-   **Step 2.** Install the [Tensorboard Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
+-   **Step 3.** Open the command palette and select the command `Python: Launch Tensorboard`
+
+[See here for more information on Tensorboard](https://www.tensorflow.org/tensorboard).
 
 ![jupyterHubPreview](https://github.com/microsoft/vscode-vscode-tensorboard/assets/1948812/0fadd80c-3455-4408-8be9-8c6441809654)
 
 ## Questions, issues, feature requests, and contributions
 
--   If you have a question about how to accomplish something with the extension, please [ask on Discussions](https://github.com/microsoft/vscode-jupyter/discussions). -   Any and all feedback is appreciated and welcome! If you come across a problem or bug with the extension, please [file an issue](https://github.com/microsoft/vscode-vscode-tensorboard/issues/new).
-    -   If someone has already [filed an issue](https://github.com/Microsoft/vscode-vscode-tensorboard/issues) that encompasses your feedback, please leave a 👍/👎 reaction on the issue.
-
+-   If you have a question about how to accomplish something with the extension, please [ask on Discussions](https://github.com/microsoft/vscode-jupyter/discussions).
+-   Any and all feedback is appreciated and welcome! If you come across a problem or bug with the extension, please [file an issue](https://github.com/microsoft/vscode-tensorboard/issues/new).
+    -   If someone has already [filed an issue](https://github.com/Microsoft/vscode-tensorboard/issues) that encompasses your feedback, please leave a 👍/👎 reaction on the issue.
 -   Contributions are always welcome, so please see our [contributing guide](https://github.com/Microsoft/vscode-tensorboard/blob/main/CONTRIBUTING.md) for more details.
 
 ## Data and telemetry

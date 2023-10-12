@@ -5,7 +5,7 @@
 | `main` branch |
 | ------------- |
 
-## | ![Main Build](https://github.com/microsoft/vscode-tensorboard/actions/workflows/build-test.yml/badge.svg?branch=main)
+## | ![Main Build](https://github.com/microsoft/vscode-tensorboard/actions/workflows/ci.yml/badge.svg?branch=main)
 
 ## Contributing a pull request
 
@@ -32,7 +32,7 @@ npm ci
 
 ### Incremental Builds
 
-* `npm run compile-watch`
+* `npm run watch`
 
 ### Errors and Warnings
 
@@ -44,4 +44,5 @@ Use the `Build and launch` debug configuration to run the extension in a new VS 
 
 ### Running Desktop Tests
 
-Use the `Tests` debug configuration to run the tests.
+Use the `Tests` debug configuration to run the tests.  
+Or run `npm run test` in the terminal.
