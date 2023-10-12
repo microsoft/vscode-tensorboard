@@ -1,33 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { EventEmitter, commands, extensions, l10n, window, workspace } from 'vscode';
+import { commands, extensions, l10n, window, workspace } from 'vscode';
 import { BaseDisposable } from './common/lifecycle';
 import { PythonExtensionId } from './constants';
 import { noop } from './common/utils';
 import { Common } from './common/localize';
 
 export class PythonExtensionChecker extends BaseDisposable {
-    private previousInstallState: boolean;
-    private readonly pythonExtensionInstallationStatusChanged = this._register(
-        new EventEmitter<'installed' | 'uninstalled'>()
-    );
-    public get onPythonExtensionInstallationStatusChanged() {
-        return this.pythonExtensionInstallationStatusChanged.event;
-    }
     /**
      * Used only for testing
      */
-    public static promptDisplayed?: boolean;
-    constructor() {
-        super();
-        // Listen for the python extension being installed or uninstalled
-        this._register(extensions.onDidChange(this.extensionsChangeHandler, this));
-
-        // Name is a bit different here as we use the isPythonExtensionInstalled property for checking the current state.
-        // This property is to see if we change it during extension actions.
-        this.previousInstallState = this.isPythonExtensionInstalled;
-    }
+    static promptDisplayed?: boolean;
 
     public get isPythonExtensionInstalled() {
         return extensions.getExtension(PythonExtensionId) !== undefined;
@@ -57,15 +41,5 @@ export class PythonExtensionChecker extends BaseDisposable {
     private async installPythonExtension() {
         // Have the user install python
         commands.executeCommand('extension.open', PythonExtensionId).then(noop, noop);
-    }
-
-    private async extensionsChangeHandler(): Promise<void> {
-        // Check to see if we changed states, if so signal
-        const newInstallState = this.isPythonExtensionInstalled;
-
-        if (newInstallState !== this.previousInstallState) {
-            this.pythonExtensionInstallationStatusChanged.fire(newInstallState ? 'installed' : 'uninstalled');
-            this.previousInstallState = newInstallState;
-        }
     }
 }

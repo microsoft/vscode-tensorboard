@@ -20,18 +20,17 @@ enum TensorBoardPromptStateKeys {
 
 export namespace TensorBoardPrompt {
     let enabledInCurrentSession = true;
-
     let waitingForUserSelection = false;
-    let telementrSent = false;
+    const telementrSentForTrigger: TensorBoardEntrypointTrigger[] = [];
     function sendTelemetryOnce(trigger: TensorBoardEntrypointTrigger) {
-        if (telementrSent) {
+        if (telementrSentForTrigger.includes(trigger)) {
             return;
         }
-        telementrSent = true;
+        telementrSentForTrigger.push(trigger);
         sendTensorboardEntrypointTriggered(trigger, TensorBoardEntrypoint.prompt);
     }
 
-    export async function showNativeTensorBoardPrompt(trigger: TensorBoardEntrypointTrigger): Promise<void> {
+    export async function show(trigger: TensorBoardEntrypointTrigger): Promise<void> {
         if (!enabledInCurrentSession || waitingForUserSelection) {
             return;
         }
@@ -43,10 +42,10 @@ export namespace TensorBoardPrompt {
         const doNotAskAgain = Common.doNotShowAgain;
         const options = [yes, no, doNotAskAgain];
         waitingForUserSelection = true;
+        enabledInCurrentSession = false;
         sendTelemetryOnce(trigger);
         const selection = await window.showInformationMessage(TensorBoard.nativeTensorBoardPrompt, ...options);
         waitingForUserSelection = false;
-        enabledInCurrentSession = false;
         let telemetrySelection = TensorBoardPromptSelection.None;
         switch (selection) {
             case yes:

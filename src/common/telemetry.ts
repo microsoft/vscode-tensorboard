@@ -5,7 +5,6 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { AppInsightsKey } from './constants';
 import { disposableStore } from './lifecycle';
 import { computeHash } from './crypto';
-import { noop } from './utils';
 import {
     EventName,
     TensorBoardEntrypoint,
@@ -81,14 +80,6 @@ export function publicLog2<E extends ClassifiedEvent<OmitMetadata<T>> = never, T
     telemetryReporter.sendTelemetryEvent(eventName, data);
 }
 
-function getHostName(url: string) {
-    try {
-        return new URL(url).hostname;
-    } catch {
-        return '';
-    }
-}
-
 interface TensorboardEntrypontTriggeredData {
     trigger: TensorBoardEntrypointTrigger;
     entrypoint: TensorBoardEntrypoint;
@@ -107,14 +98,6 @@ type TensorboardEntrypontTriggeredDataClassification = {
         comment: 'Code lens displayed';
     };
 };
-// function stripPIIFromVersion(version: string) {
-//     const parts = version.split('.');
-//     if (parts.length < 2) {
-//         return 0;
-//     }
-//     return parseFloat(`${parseInt(parts[0], 10)}.${parseInt(parts[1], 10)}`);
-// }
-
 /**
  * Safe way to send data in telemetry (obfuscate PII).
  */
@@ -239,125 +222,12 @@ export function sendTensorboardStartupResult(duration: number, result: TensorBoa
     );
 }
 
-interface JupyterHubUrlNotAdded {
-    failed: true;
-    reason: 'cancel' | 'back' | 'error';
-    lastStep:
-        | ''
-        | 'Before'
-        | 'Get Url'
-        | 'Get Username'
-        | 'Get Password'
-        | 'Verify Connection'
-        | 'Get Display Name'
-        | 'After';
-}
-type JupyterHubUrlNotAddedClassification = {
-    owner: 'donjayamanne';
-    comment: 'Url was not added';
-    failed: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Indicator that adding the Url failed';
-    };
-    reason: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Reason for cancellation, back, cancel or error';
-    };
-    lastStep: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Last step the user took before exiting the workflow to add a url';
-    };
-};
-
-export function sendJupyterHubUrlNotAdded(
-    reason: 'cancel' | 'back' | 'error',
-    lastStep:
-        | ''
-        | 'Before'
-        | 'Get Url'
-        | 'Get Username'
-        | 'Get Password'
-        | 'Verify Connection'
-        | 'Get Display Name'
-        | 'After'
-) {
-    publicLog2<JupyterHubUrlNotAdded, JupyterHubUrlNotAddedClassification>('addJupyterHubUrl', {
-        failed: true,
-        reason,
-        lastStep
-    });
-}
-
-interface JupyterHubTokenGeneratedUsingOldAPIData {
-    hostNameHash: string;
-    baseUrlHash: string;
-}
-type JupyterHubTokenGeneratedUsingOldAPIDataClassification = {
-    owner: 'donjayamanne';
-    comment: 'Sent when we generate API tokens using the old API';
-    hostNameHash: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Hash of the host name of the server';
-    };
-    baseUrlHash: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Hash of the base url';
-    };
-};
-
-export function trackUsageOfOldApiGeneration(baseUrl: string) {
-    Promise.all([getTelemetrySafeHashedString(getHostName(baseUrl)), getTelemetrySafeHashedString(baseUrl)])
-        .then(([hostNameHash, baseUrlHash]) => {
-            publicLog2<JupyterHubTokenGeneratedUsingOldAPIData, JupyterHubTokenGeneratedUsingOldAPIDataClassification>(
-                'generateTokenWithOldApi',
-                {
-                    hostNameHash,
-                    baseUrlHash
-                }
-            );
-        })
-        .catch(noop);
-}
-interface JupyterHubUsage {}
-type JupyterHubUsageClassification = {
+interface TensorboardUsage {}
+type TensorboardUsageClassification = {
     owner: 'donjayamanne';
     comment: 'Sent extension activates';
 };
 
 export function trackInstallOfExtension() {
-    publicLog2<JupyterHubUsage, JupyterHubUsageClassification>('activated', {});
-}
-
-interface JupyterHubUrlCertProblemsSolutionData {
-    solution: 'allow' | 'cancel';
-    problem: 'self-signed' | 'expired';
-}
-type JupyterHubUrlCertProblemsSolutionDataClassification = {
-    owner: 'donjayamanne';
-    comment: 'Sent when user attempts to overcome a cert problem';
-    problem: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'Problem with certificate';
-    };
-    solution: {
-        classification: 'SystemMetaData';
-        purpose: 'FeatureInsight';
-        comment: 'How did user solve the cert problem did they allow usage of untrusted certs or cancel adding them';
-    };
-};
-
-export function solveCertificateProblem(problem: 'self-signed' | 'expired', solution: 'allow' | 'cancel') {
-    publicLog2<JupyterHubUrlCertProblemsSolutionData, JupyterHubUrlCertProblemsSolutionDataClassification>(
-        'addJupyterHubUrlWithCertProblem',
-        {
-            solution,
-            problem
-        }
-    );
+    publicLog2<TensorboardUsage, TensorboardUsageClassification>('activated', {});
 }
