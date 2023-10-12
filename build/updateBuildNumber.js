@@ -3,7 +3,6 @@
 
 const fs = require('fs');
 
-
 /**
  * For multi-platform builds We end up generating multiple VSIX in the same pipeline.
  * As a result this runs multiple times in the same pipeline,
@@ -62,4 +61,4 @@ function updateBuildNumber() {
     fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 4), 'utf-8');
 }
 
-updateBuildNumber()
+updateBuildNumber();
