@@ -39,13 +39,17 @@ export function dispose<T extends IDisposable>(arg: T | Array<T> | ReadonlyArray
 }
 
 export class DisposableStore {
-    protected readonly disposables: IDisposable[] = [];
+    private _disposables: IDisposable[] = [];
+    protected get disposables() {
+        return this._disposables;
+    }
     add<T extends IDisposable>(disposable: T) {
         this.disposables.push(disposable);
         return disposable;
     }
     dispose() {
         dispose(this.disposables);
+        this._disposables = [];
     }
 }
 

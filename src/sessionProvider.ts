@@ -4,7 +4,7 @@
 import { commands, l10n, window, workspace } from 'vscode';
 import { traceDebug, traceError } from './common/logging';
 import { Commands, TensorBoardEntrypoint, TensorBoardEntrypointTrigger } from './constants';
-import { TensorBoardSession } from './tensorBoardSession';
+import { TensorBoardSession } from './session';
 import { BaseDisposable } from './common/lifecycle';
 import { sendTensorboardLaunch } from './common/telemetry';
 import { hasFileBasedWorkspace } from './helpers';
