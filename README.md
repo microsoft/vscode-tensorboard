@@ -9,8 +9,6 @@ A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marke
 
 [See here for more information on Tensorboard](https://www.tensorflow.org/tensorboard).
 
-![jupyterHubPreview](https://github.com/microsoft/vscode-vscode-tensorboard/assets/1948812/0fadd80c-3455-4408-8be9-8c6441809654)
-
 ## Questions, issues, feature requests, and contributions
 
 -   If you have a question about how to accomplish something with the extension, please [ask on Discussions](https://github.com/microsoft/vscode-jupyter/discussions).

@@ -40,13 +40,12 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "${workspaceFolder}/tmp",
-                "--enable-proposed-api",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test/suite/index.js"
             ],
             "sourceMaps": true,
             "outFiles": ["${workspaceFolder}/out/**/*.js", "!${workspaceFolder}/**/node_modules**/*"],
-            "preLaunchTask": "watch",
+            "preLaunchTask": "watch-tests",
             "skipFiles": ["<node_internals>/**"],
             "presentation": {
                 "group": "2_tests",
