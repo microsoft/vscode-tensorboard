@@ -89,7 +89,13 @@
                         "error",
                         "debug"
                     ],
-                    "description": "%tensorboard.configuration.tensorboard.log.description%"
+                    "description": "%tensorboard.log.description%"
+                },
+                "tensorBoard.logDirectory": {
+                    "default": "",
+                    "description": "%tensorBoard.logDirectory.description%",
+                    "scope": "resource",
+                    "type": "string"
                 }
             }
         }

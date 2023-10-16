@@ -88,10 +88,21 @@ function getQuickPickItems(logDir: string | undefined) {
 }
 
 function getLogDirectoryForResource(resource?: Uri) {
+    return getLogDirectoryForResourceFromTensorboardExt(resource) || getLogDirectoryForResourceFromPythonExt(resource);
+}
+function getLogDirectoryForResourceFromPythonExt(resource?: Uri) {
     const config = workspace.getConfiguration('python', resource);
     const settingValue = config.get<{ logDirectory?: string }>('tensorBoard')?.logDirectory;
     if (settingValue) {
         traceDebug(`Using log directory resolved by python.tensorBoard.logDirectory setting: ${settingValue}`);
+        return settingValue;
+    }
+}
+function getLogDirectoryForResourceFromTensorboardExt(resource?: Uri) {
+    const config = workspace.getConfiguration('tensorboard', resource);
+    const settingValue = config.get<string>('logDirectory');
+    if (settingValue) {
+        traceDebug(`Using log directory resolved by tensorBoard.logDirectory setting: ${settingValue}`);
         return settingValue;
     }
 }
