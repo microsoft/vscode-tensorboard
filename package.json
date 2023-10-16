@@ -81,7 +81,7 @@
             "type": "object",
             "title": "Tensobarod",
             "properties": {
-                "tensorboard.log": {
+                "tensorBoard.log": {
                     "type": "string",
                     "default": "error",
                     "enum": [
@@ -89,7 +89,7 @@
                         "error",
                         "debug"
                     ],
-                    "description": "%tensorboard.log.description%"
+                    "description": "%tensorBoard.log.description%"
                 },
                 "tensorBoard.logDirectory": {
                     "default": "",
