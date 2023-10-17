@@ -4,7 +4,7 @@ A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marke
 
 ### Quick Start
 -   **Step 1.** Install [VS Code](https://code.visualstudio.com/)
--   **Step 2.** Install the [Tensorboard Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-tensorboard)
+-   **Step 2.** Install the [Tensorboard Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.tensorboard)
 -   **Step 3.** Open the command palette and select the command `Python: Launch Tensorboard`
 
 [See here for more information on Tensorboard](https://www.tensorflow.org/tensorboard).

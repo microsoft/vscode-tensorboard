@@ -101,7 +101,7 @@
         }
     },
     "scripts": {
-        "package": "npm run compile-release && vsce package -o ms-toolsai-vscode-tensorboard-insiders.vsix",
+        "package": "npm run compile-release && vsce package -o ms-toolsai-tensorboard-insiders.vsix",
         "postinstall": "npx vscode-dts 1.83.0",
         "lint": "eslint -c .eslintrc.js --ext .ts --ext .tsx src",
         "lint-fix": "eslint --fix --ext .ts,.js src build",
