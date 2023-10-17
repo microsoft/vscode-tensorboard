@@ -1,6 +1,6 @@
 # Tensorboard Extension for Visual Studio Code
 
-A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) that provides the ability to launch and view Tensorboards in VS Code.
+A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.tensorboard) that provides the ability to launch and view Tensorboards in VS Code.
 
 ### Quick Start
 -   **Step 1.** Install [VS Code](https://code.visualstudio.com/)
