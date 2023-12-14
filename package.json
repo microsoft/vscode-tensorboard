@@ -27,7 +27,7 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.83.0"
+        "vscode": "^1.85.0"
     },
     "l10n": "./l10n",
     "keywords": [
@@ -100,9 +100,12 @@
             }
         }
     },
+    "enabledApiProposals": [
+        "portsAttributes"
+    ],
     "scripts": {
         "package": "npm run compile-release && vsce package -o ms-toolsai-tensorboard-insiders.vsix",
-        "postinstall": "npx vscode-dts 1.83.0",
+        "postinstall": "npx vscode-dts dev && npx vscode-dts 1.85.0",
         "lint": "eslint -c .eslintrc.js --ext .ts --ext .tsx src",
         "lint-fix": "eslint --fix --ext .ts,.js src build",
         "format": "prettier --check 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml'",
