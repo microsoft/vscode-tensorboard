@@ -10,10 +10,14 @@ import {
     Event,
     EventEmitter,
     Memento,
+    PortAttributes,
+    PortAttributesProvider,
+    PortAutoForwardAction,
     Position,
     Progress,
     ProgressLocation,
     ProgressOptions,
+    ProviderResult,
     QuickPickItem,
     Selection,
     TextEditorRevealType,
@@ -52,7 +56,8 @@ const PREFERRED_VIEWGROUP = 'PythonTensorBoardWebviewPreferredViewGroup';
  * - frames the TensorBoard website in a VSCode webview
  * - shuts down the TensorBoard process when the webview is closed
  */
-export class TensorBoardSession extends BaseDisposable {
+export class TensorBoardSession extends BaseDisposable implements PortAttributesProvider {
+    private readonly usedPorts = new Set<number>();
     public get panel(): WebviewPanel | undefined {
         return this.webviewPanel;
     }
@@ -76,6 +81,18 @@ export class TensorBoardSession extends BaseDisposable {
     constructor() {
         super();
         this.globalMemento = ExtensionInfo.context.globalState;
+        this._register(
+            workspace.registerPortAttributesProvider({ commandPattern: new RegExp('tensorboard_launcher', '') }, this)
+        );
+    }
+
+    providePortAttributes(
+        attributes: { port: number; pid?: number | undefined; commandLine?: string | undefined },
+        _token: CancellationToken
+    ): ProviderResult<PortAttributes> {
+        if (this.usedPorts.has(attributes.port)) {
+            return new PortAttributes(PortAutoForwardAction.Silent);
+        }
     }
 
     public get onDidDispose(): Event<TensorBoardSession> {
@@ -139,6 +156,8 @@ export class TensorBoardSession extends BaseDisposable {
 
         const sessionStartStopwatch = new StopWatch();
         const proc = await launchTensorboard(undefined, interpreter, logDir);
+        let disposed = false;
+        this._register({ dispose: () => (disposed = true) });
         this._register(new Disposable(() => proc.kill()));
         const result = await window.withProgress(
             progressOptions,
@@ -146,7 +165,15 @@ export class TensorBoardSession extends BaseDisposable {
                 traceDebug(`Starting TensorBoard with log directory ${logDir}...`);
 
                 const spawnTensorBoard = waitForTensorboardToStart(proc, token);
-
+                void spawnTensorBoard.then((url) => {
+                    if (disposed) {
+                        return;
+                    }
+                    const port = parseInt(new URL(url).port, 10);
+                    if (port) {
+                        this.usedPorts.add(port);
+                    }
+                });
                 return Promise.race([
                     sleep(timeout).then(() => timeout),
                     raceCancellation(token, 'canceled', spawnTensorBoard)
