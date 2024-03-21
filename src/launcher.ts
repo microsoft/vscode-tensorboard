@@ -19,8 +19,8 @@ export async function launchTensorboard(
     const api = await PrivatePythonApiProvider.instance.getApi();
     const env = await api.getActivatedEnvironmentVariables(resource);
     const script = Uri.joinPath(ExtensionInfo.context.extensionUri, 'pythonFiles', 'tensorboard_launcher.py');
-    const args = [fileToCommandArgument(script.fsPath), fileToCommandArgument(logDir)];
-    logProcessSpawn(pythonEnv.path, args, logDir);
+    const args = [fileToCommandArgument(script.fsPath), fileToCommandArgument('./')];
+    logProcessSpawn(pythonEnv.path, args, './');
     return spawn(pythonEnv.path, args, { cwd: logDir, env });
 }
 

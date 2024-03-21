@@ -99,7 +99,7 @@ function getLogDirectoryForResourceFromPythonExt(resource?: Uri) {
     }
 }
 function getLogDirectoryForResourceFromTensorboardExt(resource?: Uri) {
-    const config = workspace.getConfiguration('tensorboard', resource);
+    const config = workspace.getConfiguration('tensorBoard', resource);
     const settingValue = config.get<string>('logDirectory');
     if (settingValue) {
         traceDebug(`Using log directory resolved by tensorBoard.logDirectory setting: ${settingValue}`);

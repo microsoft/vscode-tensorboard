@@ -7,12 +7,12 @@ import { disposableStore } from './lifecycle';
 
 export const outputChannel = disposableStore.add(window.createOutputChannel(Localized.OutputChannelName, 'log'));
 
-let loggingLevel: 'error' | 'debug' | 'off' = workspace.getConfiguration('tensorboard').get('log', 'error');
+let loggingLevel: 'error' | 'debug' | 'off' = workspace.getConfiguration('tensorBoard').get('log', 'error');
 
 disposableStore.add(
     workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration('tensorboard.log')) {
-            let setting: string = workspace.getConfiguration('tensorboard').log;
+            let setting: string = workspace.getConfiguration('tensorBoard').log;
             setting = setting.toLowerCase();
             if (setting === 'error' || setting === 'debug' || setting === 'off') {
                 loggingLevel = setting;
