@@ -1,7 +1,7 @@
 {
     "name": "tensorboard",
     "displayName": "Tensorboard",
-    "version": "2023.10.100",
+    "version": "2024.3.100",
     "description": "Launch and view Tensorboards within VS Code",
     "publisher": "ms-toolsai",
     "preview": true,
@@ -79,7 +79,7 @@
         },
         "configuration": {
             "type": "object",
-            "title": "Tensobarod",
+            "title": "Tensorboard",
             "properties": {
                 "tensorBoard.log": {
                     "type": "string",
