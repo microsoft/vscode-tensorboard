@@ -2,5 +2,6 @@
     "tensorBoard.log.description": "The logging level the extension logs at.",
     "tensorBoard.logDirectory.description": "Set this setting to your preferred TensorBoard log directory to skip log directory prompt when starting TensorBoard.",
     "launchTensorBoard.title": "Launch TensorBoard",
-    "refreshTensorBoard.title": "Refresh TensorBoard"
+    "refreshTensorBoard.title": "Refresh TensorBoard",
+    "stopTensorBoard.title": "Stop TensorBoard"
 }

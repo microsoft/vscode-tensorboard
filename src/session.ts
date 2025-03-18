@@ -132,6 +132,17 @@ export class TensorBoardSession extends BaseDisposable implements PortAttributes
         }
     }
 
+    public async stop(): Promise<void> {
+        traceDebug("Terminating TensorBoard Session");
+        // Kill the running TensorBoard session
+        this.process?.kill();
+        this.process = undefined;
+        this._active = false;
+        this.onDidDisposeEventEmitter.fire(this);
+
+        this.webviewPanel?.dispose()
+    }
+
     // Spawn a process which uses TensorBoard's Python API to start a TensorBoard session.
     // Times out if it hasn't started up after 1 minute.
     // Hold on to the process so we can kill it when the webview is closed.
@@ -187,17 +198,17 @@ export class TensorBoardSession extends BaseDisposable implements PortAttributes
             proc.kill();
             return;
         }
-        if (result === 'success') {
-            this.process = proc;
-            sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.success);
-            return;
-        }
         if (typeof result === 'number') {
             proc.kill();
             sendTensorboardStartupResult(sessionStartStopwatch.elapsed, TensorBoardSessionStartResult.error);
             throw new Error(`Timed out after ${timeout / 1000} seconds waiting for TensorBoard to launch.`);
         }
         traceDebug(`Started TensorBoard session with result ${result}`);
+
+        // result holds url which is used in start()
+        // implicitely assigning process
+        // allows it to be terminated with stop()
+        this.process = proc;
         return result;
     }
 
@@ -222,16 +233,6 @@ export class TensorBoardSession extends BaseDisposable implements PortAttributes
         this._register(webviewPanel);
         webviewPanel.webview.html = await this.getHtml(url);
         this.webviewPanel = webviewPanel;
-        this._register(
-            webviewPanel.onDidDispose(() => {
-                this.webviewPanel = undefined;
-                // Kill the running TensorBoard session
-                this.process?.kill();
-                this.process = undefined;
-                this._active = false;
-                this.onDidDisposeEventEmitter.fire(this);
-            })
-        );
         this._register(
             webviewPanel.onDidChangeViewState(async (args: WebviewPanelOnDidChangeViewStateEvent) => {
                 // The webview has been moved to a different viewgroup if it was active before and remains active now

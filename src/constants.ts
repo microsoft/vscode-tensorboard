@@ -26,6 +26,7 @@ export enum TensorBoardSessionStartResult {
 export namespace Commands {
   export const LaunchTensorBoard = 'tensorboard.launch';
   export const RefreshTensorBoard = 'tensorboard.refresh';
+  export const StopTensorBoard = 'tensorboard.stop';
 }
 
 export const PYTHON_LANGUAGE = 'python';
