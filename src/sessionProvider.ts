@@ -44,6 +44,9 @@ export class TensorBoardSessionProvider extends BaseDisposable {
         this._register(
             commands.registerCommand(Commands.RefreshTensorBoard, () => this.knownSessions.map((w) => w.refresh()))
         );
+        this._register(
+            commands.registerCommand(Commands.StopTensorBoard, () => this.knownSessions.map((w) => w.stop()))
+        );
     }
     private updateTensorBoardSessionContext() {
         let hasActiveTensorBoardSession = false;

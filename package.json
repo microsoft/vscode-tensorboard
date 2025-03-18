@@ -57,6 +57,13 @@
                 "enablement": "tensorboard.hasActiveTensorBoardSession",
                 "icon": "$(refresh)",
                 "title": "%refreshTensorBoard.title%"
+            },
+            {
+                "category": "Python",
+                "command": "tensorboard.stop",
+                "enablement": "tensorboard.hasActiveTensorBoardSession",
+                "icon": "$(refresh)",
+                "title": "%stopTensorBoard.title%"
             }
         ],
         "menus": {
@@ -73,6 +80,14 @@
                     "enablement": "tensorboard.hasActiveTensorBoardSession",
                     "icon": "$(refresh)",
                     "title": "%refreshTensorBoard.title%",
+                    "when": "!virtualWorkspace && isWorkspaceTrusted"
+                },
+                {
+                    "category": "Python",
+                    "command": "tensorboard.stop",
+                    "enablement": "tensorboard.hasActiveTensorBoardSession",
+                    "icon": "$(stop)",
+                    "title": "%stopTensorBoard.title%",
                     "when": "!virtualWorkspace && isWorkspaceTrusted"
                 }
             ]
