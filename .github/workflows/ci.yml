@@ -18,8 +18,8 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 18.17.1
-  NPM_VERSION: 9.6.7
+  NODE_VERSION: 20.18.1
+  NPM_VERSION: 10.8.2
   PYTHON_VERSION: '3.10'
 
 jobs:
