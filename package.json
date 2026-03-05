@@ -132,7 +132,7 @@
         "@typescript-eslint/eslint-plugin-tslint": "^6.2.0",
         "@typescript-eslint/parser": "^6.2.0",
         "@vscode/dts": "^0.4.0",
-        "@vscode/test-electron": "^2.3.4",
+        "@vscode/test-electron": "^2.5.2",
         "chai": "^4.3.8",
         "eslint": "^8.45.0",
         "eslint-config-airbnb": "^19.0.4",
