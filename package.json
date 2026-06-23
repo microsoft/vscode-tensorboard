@@ -121,7 +121,7 @@
         "analyze": "webpack --profile --json > 'tmp/stats.json' && npx webpack-bundle-analyzer tmp/stats.json"
     },
     "dependencies": {
-        "@vscode/extension-telemetry": "^0.7.7",
+        "@vscode/extension-telemetry": "^1.5.2",
         "@vscode/python-extension": "^1.0.5"
     },
     "devDependencies": {
