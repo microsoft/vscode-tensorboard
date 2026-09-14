@@ -16,9 +16,7 @@ module.exports = {
         'eslint-plugin-jsdoc',
         'eslint-plugin-no-null',
         'eslint-plugin-prefer-arrow',
-        'eslint-plugin-react',
         '@typescript-eslint',
-        '@typescript-eslint/tslint',
         'no-only-tests',
         'header'
     ],
@@ -130,10 +128,6 @@ module.exports = {
             node: {
                 extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx']
             }
-        },
-        react: {
-            pragma: 'React',
-            version: 'detect'
         },
         propWrapperFunctions: ['forbidExtraProps', 'exact', 'Object.freeze'],
         'import/core-modules': [],
